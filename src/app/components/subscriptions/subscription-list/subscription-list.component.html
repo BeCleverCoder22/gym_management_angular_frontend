@@ -1,0 +1,54 @@
+<div class="subscription-list">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Gestion des Abonnements</h2>
+      <button class="btn btn-primary" routerLink="/subscriptions/new">
+        <i class="bi bi-plus-circle"></i> Nouvel Abonnement
+      </button>
+    </div>
+  
+    <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+  
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Offre</th>
+                <th>Date de début</th>
+                <th>Prix mensuel</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="loading">
+                <td colspan="5" class="text-center">Chargement...</td>
+              </tr>
+              <tr *ngIf="!loading && subscriptions.length === 0">
+                <td colspan="5" class="text-center">Aucun abonnement trouvé</td>
+              </tr>
+              <tr *ngFor="let subscription of subscriptions">
+                <td>{{ subscription.customer?.lastName }} {{ subscription.customer?.firstName }}</td>
+                <td>{{ subscription.pack?.offerName }}</td>
+                <td>{{ subscription.startDate | date:'dd/MM/yyyy' }}</td>
+                <td>{{ subscription.pack?.monthlyPrice | currency:'XOF' }}</td>
+                <td>
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-primary" 
+                            [routerLink]="['/subscriptions/edit', subscription.id]">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" 
+                            (click)="cancelSubscription(subscription.id!)">
+                      <i class="bi bi-x-circle"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>

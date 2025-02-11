@@ -1,0 +1,13 @@
+.subscription-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .form-label {
+    font-weight: 500;
+  }
+  
+  .form-select, .form-control {
+    margin-bottom: 0.5rem;
+  }

@@ -1,0 +1,19 @@
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .main-container {
+    flex: 1;
+    margin-top: 56px;
+  }
+  
+  .main-container.with-sidebar {
+    margin-left: 250px;
+  }
+  
+  .content {
+    padding: 20px;
+    margin-bottom: 60px;
+  }

@@ -1,0 +1,15 @@
+.pack-list-container {
+    padding: 1rem;
+  }
+  
+  .btn-group {
+    gap: 0.5rem;
+  }
+  
+  .table {
+    margin-bottom: 0;
+  }
+  
+  .table th {
+    background-color: #f8f9fa;
+  }

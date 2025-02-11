@@ -1,0 +1,78 @@
+<div class="subscription-form">
+    <div class="card">
+      <div class="card-header">
+        <h2>{{ isEditMode ? 'Modifier l\'abonnement' : 'Nouvel abonnement' }}</h2>
+      </div>
+      
+      <div class="card-body">
+        <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()">
+          <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+  
+          <div class="mb-3">
+            <label for="customerId" class="form-label">Client</label>
+            <select 
+              id="customerId" 
+              formControlName="customerId" 
+              class="form-select"
+              [class.is-invalid]="subscriptionForm.get('customerId')?.invalid && subscriptionForm.get('customerId')?.touched"
+            >
+              <option value="">Sélectionnez un client</option>
+              <option *ngFor="let customer of customers" [value]="customer.id">
+                {{ customer.lastName }} {{ customer.firstName }}
+              </option>
+            </select>
+            <div class="invalid-feedback">
+              Veuillez sélectionner un client
+            </div>
+          </div>
+  
+          <div class="mb-3">
+            <label for="packId" class="form-label">Offre</label>
+            <select 
+              id="packId" 
+              formControlName="packId" 
+              class="form-select"
+              [class.is-invalid]="subscriptionForm.get('packId')?.invalid && subscriptionForm.get('packId')?.touched"
+            >
+              <option value="">Sélectionnez une offre</option>
+              <option *ngFor="let pack of packs" [value]="pack.id">
+                {{ pack.offerName }} - {{ pack.monthlyPrice | currency:'XOF' }}/mois
+              </option>
+            </select>
+            <div class="invalid-feedback">
+              Veuillez sélectionner une offre
+            </div>
+          </div>
+  
+          <div class="mb-3">
+            <label for="startDate" class="form-label">Date de début</label>
+            <input 
+              type="date" 
+              id="startDate" 
+              formControlName="startDate" 
+              class="form-control"
+              [class.is-invalid]="subscriptionForm.get('startDate')?.invalid && subscriptionForm.get('startDate')?.touched"
+            >
+            <div class="invalid-feedback">
+              Veuillez sélectionner une date de début
+            </div>
+          </div>
+  
+          <div class="d-flex justify-content-between">
+            <button 
+              type="button" 
+              class="btn btn-secondary" 
+              routerLink="/subscriptions">
+              Annuler
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="subscriptionForm.invalid || loading">
+              {{ loading ? 'Enregistrement...' : (isEditMode ? 'Modifier' : 'Créer') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

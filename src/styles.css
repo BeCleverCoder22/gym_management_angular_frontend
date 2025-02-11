@@ -1,1 +1,68 @@
-/* You can add global styles to this file, and also import other style files */
+/* Importation de Bootstrap et Bootstrap Icons */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+/* Styles globaux */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* Styles pour les formulaires */
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Styles pour les boutons */
+.btn {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* Styles pour les alertes */
+.alert {
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+/* Styles pour les cartes */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour les tableaux */
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  background-color: transparent;
+}
+
+.table th {
+  border-top: none;
+  background-color: #f8f9fa;
+}
+
+/* Styles utilitaires */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

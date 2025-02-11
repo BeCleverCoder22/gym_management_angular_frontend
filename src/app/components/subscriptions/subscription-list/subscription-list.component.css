@@ -1,0 +1,11 @@
+.subscription-list {
+    padding: 20px;
+  }
+  
+  .table th {
+    white-space: nowrap;
+  }
+  
+  .btn-group {
+    gap: 5px;
+  }

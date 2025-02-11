@@ -1,0 +1,71 @@
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Liste des Clients</h2>
+      <a routerLink="/customers/new" class="btn btn-primary">
+        <i class="bi bi-plus"></i> Nouveau Client
+      </a>
+    </div>
+  
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Rechercher un client..."
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="searchCustomers()"
+          >
+          <button class="btn btn-outline-secondary" type="button" (click)="searchCustomers()">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>Date d'inscription</th>
+              <th>Téléphone</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="6" class="text-center py-4">Chargement...</td>
+            </tr>
+            <tr *ngIf="!loading && customers.length === 0">
+              <td colspan="6" class="text-center py-4">Aucun client trouvé</td>
+            </tr>
+            <tr *ngFor="let customer of customers">
+              <td>{{ customer.lastName }}</td>
+              <td>{{ customer.firstName }}</td>
+              <td>{{ customer.registrationDate | date:'dd/MM/yyyy' }}</td>
+              <td>{{ customer.phoneNumber }}</td>
+              <td>
+                <span [class]="customer.activeSubscription ? 'badge bg-success' : 'badge bg-danger'">
+                  {{ customer.activeSubscription ? 'Actif' : 'Inactif' }}
+                </span>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <a [routerLink]="['/customers/edit', customer.id]" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <button (click)="deleteCustomer(customer.id!)" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
