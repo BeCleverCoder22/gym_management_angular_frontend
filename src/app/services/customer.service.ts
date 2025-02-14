@@ -31,9 +31,9 @@ export class CustomerService {
     return this.http.delete<void>(`${this.apiUrl}/customers/${id}`);
   }
 
-  searchByName(name: string): Observable<Customer[]> {
+  searchByName(lastName: string): Observable<Customer[]> {
     return this.http.get<Customer[]>(`${this.apiUrl}/customers/search`, {
-      params: { name }
+      params: { lastName }
     });
   }
 }

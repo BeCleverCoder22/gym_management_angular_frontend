@@ -11,6 +11,7 @@ export class SidebarComponent {
     { path: '/dashboard', icon: 'bi bi-speedometer2', label: 'Tableau de bord' },
     { path: '/customers', icon: 'bi bi-people', label: 'Clients' },
     { path: '/packs', icon: 'bi bi-box', label: 'Offres' },
-    { path: '/subscriptions', icon: 'bi bi-card-checklist', label: 'Abonnements' }
+    { path: '/subscriptions', icon: 'bi bi-card-checklist', label: 'Abonnements' },
+    { path: '/users', icon: 'bi bi-person-gear', label: 'Utilisateurs' }
   ];
 }

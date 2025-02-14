@@ -21,7 +21,7 @@ export class RegisterComponent {
   ) {
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4)]],
-      // email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       role: 'USER'
@@ -44,7 +44,7 @@ export class RegisterComponent {
       
       this.authService.register(userData).subscribe({
         next: () => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/login']);
         },
         error: (error) => {
           this.error = 'Une erreur est survenue lors de l\'inscription';

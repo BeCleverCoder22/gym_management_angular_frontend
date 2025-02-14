@@ -12,6 +12,10 @@ import { PackFormComponent } from './components/packs/pack-form/pack-form.compon
 import { SubscriptionListComponent } from './components/subscriptions/subscription-list/subscription-list.component';
 import { SubscriptionFormComponent } from './components/subscriptions/subscription-form/subscription-form.component';
 import { StatisticsComponent } from './components/dashboard/statistics/statistics.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { UserListComponent } from './components/users/user-list/user-list.component';
+import { UserFormComponent } from './components/users/user-form/user-form.component';
+
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -30,7 +34,11 @@ const routes: Routes = [
       { path: 'packs/edit/:id', component: PackFormComponent },
       { path: 'subscriptions', component: SubscriptionListComponent },
       { path: 'subscriptions/new', component: SubscriptionFormComponent },
-      { path: 'subscriptions/edit/:id', component: SubscriptionFormComponent }
+      { path: 'subscriptions/edit/:id', component: SubscriptionFormComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'users', component: UserListComponent },
+      { path: 'users/new', component: UserFormComponent },
+      { path: 'users/edit/:id', component: UserFormComponent }
     ]
   }
 ];

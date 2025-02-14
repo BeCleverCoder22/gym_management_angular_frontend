@@ -20,6 +20,9 @@ import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withFetch } fro
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { ProfileComponent } from './components/profile/profile.component';
+import { UserListComponent } from './components/users/user-list/user-list.component';
+import { UserFormComponent } from './components/users/user-form/user-form.component';
 
 
 @NgModule({
@@ -36,7 +39,10 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     LoginComponent,
     RegisterComponent,
     SubscriptionFormComponent,
-    StatisticsComponent
+    StatisticsComponent,
+    ProfileComponent,
+    UserListComponent,
+    UserFormComponent
   ],
   imports: [
     BrowserModule,

@@ -73,11 +73,4 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.isLocalStorageAvailable() && !!localStorage.getItem('token');
   }
-
-  changePassword(oldPassword: string, newPassword: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/auth/change-password`, {
-      oldPassword,
-      newPassword
-    });
-  }
 }
