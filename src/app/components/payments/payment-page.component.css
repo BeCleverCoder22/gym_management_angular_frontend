@@ -1,0 +1,7 @@
+.payment-form-grid { display: grid; grid-template-columns: 2fr 1fr .7fr 1.2fr auto; gap: 1rem; align-items: end; }
+.payment-form-grid label { display: block; margin-bottom: .4rem; font-size: .82rem; font-weight: 650; }
+.payment-submit { white-space: nowrap; }
+.form-note { margin: 1rem 0 0; color: var(--ink-muted); font-size: .82rem; }
+.actions-cell { display: flex; gap: .4rem; min-width: 12rem; }
+@media (max-width: 900px) { .payment-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .payment-submit { grid-column: 1 / -1; } }
+@media (max-width: 520px) { .payment-form-grid { grid-template-columns: 1fr; } .payment-submit { grid-column: auto; } }

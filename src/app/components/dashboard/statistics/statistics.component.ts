@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
 import { StatisticsService } from '../../../services/statistics.service';
+import { DashboardStatistics } from '../../../services/statistics.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-statistics',
@@ -9,11 +11,18 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./statistics.component.css']
 })
 export class StatisticsComponent implements OnInit {
-  statistics = {
-    totalActiveCustomers: 0,
-    monthlyRevenue: 0,
-    startDate: '',
-    endDate: '' 
+  packDistribution: { packName: string; count: number }[] = [];
+  hasPackDistribution = false;
+  statistics: DashboardStatistics = {
+    totalCustomers: 0,
+    activeCustomers: 0,
+    newCustomers: 0,
+    activeSubscriptions: 0,
+    expiredSubscriptions: 0,
+    subscriptionsDue: 0,
+    subscriptionsSoldThisMonth: 0,
+    estimatedMonthlyRevenue: 0,
+    packDistribution: []
   };
   loading = true;
   error = '';
@@ -23,7 +32,9 @@ export class StatisticsComponent implements OnInit {
 
   constructor(
     private statisticsService: StatisticsService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private changeDetector: ChangeDetectorRef,
+    private destroyRef: DestroyRef
   ) {
     this.exportForm = this.fb.group({
       startDate: ['', Validators.required],
@@ -37,15 +48,20 @@ export class StatisticsComponent implements OnInit {
 
   loadStatistics(): void {
     this.loading = true;
-    this.statisticsService.getStatistics().subscribe({
-      next: (data) => {
-        this.statistics.totalActiveCustomers = data.totalActiveCustomers;
-        this.statistics.monthlyRevenue = data.monthlyRevenue;
+    this.error = '';
+    this.statisticsService.getStatistics().pipe(
+      finalize(() => {
         this.loading = false;
+        if (!this.destroyRef.destroyed) this.changeDetector.detectChanges();
+      })
+    ).subscribe({
+      next: (data) => {
+        this.statistics = data;
+        this.packDistribution = Array.isArray(data?.packDistribution) ? data.packDistribution : [];
+        this.hasPackDistribution = this.packDistribution.length > 0;
       },
       error: () => {
-        this.error = 'Erreur lors du chargement des statistiques';
-        this.loading = false;
+        this.error = 'Impossible de charger les statistiques. Vérifiez le backend et réessayez.';
       }
     });
   }
@@ -56,7 +72,7 @@ export class StatisticsComponent implements OnInit {
       this.exportSuccess = false;
       const { startDate, endDate } = this.exportForm.value;
 
-      this.statisticsService.exportSubscriptions(new Date(startDate), new Date(endDate))
+      this.statisticsService.exportSubscriptions(startDate, endDate)
         .subscribe({
           next: (blob) => {
             const url = window.URL.createObjectURL(blob);

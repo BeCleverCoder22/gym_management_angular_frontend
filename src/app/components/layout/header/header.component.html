@@ -1,24 +1,9 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-    <div class="container">
-      <a class="navbar-brand" routerLink="/">GYMFIT PRO</a>
-      
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/profile">
-              <i class="bi bi-person"></i> Profil
-            </a>
-          </li>
-          <li class="nav-item">
-            <button class="btn btn-link nav-link" (click)="logout()">
-              <i class="bi bi-box-arrow-right"></i> Déconnexion
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+<header class="app-header">
+  <a class="brand-lockup" routerLink="/dashboard"><span class="brand-mark">G</span><span>GYM<span class="brand-light">MANAGER</span></span></a>
+  <div class="header-context"><span class="context-dot"></span><span>{{ organizationLabel || 'Espace de gestion' }}</span></div>
+  <div class="header-actions">
+    <a class="header-profile" routerLink="/profile"><i class="bi bi-person-circle" aria-hidden="true"></i><span>{{ authService.currentUserSubjectValue?.username || 'Mon profil' }}</span></a>
+    <button class="icon-action" type="button" (click)="logout()" aria-label="Se déconnecter" title="Se déconnecter"><i class="bi bi-box-arrow-right" aria-hidden="true"></i></button>
+  </div>
+  <span class="logout-error" *ngIf="logoutError" role="alert">{{ logoutError }}</span>
+</header>

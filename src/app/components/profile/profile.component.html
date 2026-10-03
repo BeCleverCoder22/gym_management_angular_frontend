@@ -76,7 +76,7 @@
             [class.is-invalid]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched"
           >
           <div class="invalid-feedback" *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">
-            Le mot de passe doit contenir au moins 6 caractères
+            Le mot de passe doit contenir entre 12 et 72 caractères
           </div>
         </div>
 

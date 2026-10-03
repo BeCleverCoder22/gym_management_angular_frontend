@@ -1,12 +1,10 @@
-<div class="sidebar">
-    <nav class="sidebar-nav">
-      <ul class="nav flex-column">
-        <li class="nav-item" *ngFor="let item of menuItems">
-          <a class="nav-link" [routerLink]="item.path" routerLinkActive="active">
-            <i [class]="item.icon"></i>
-            <span>{{ item.label }}</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </div>
+<aside class="sidebar">
+  <nav class="sidebar-nav" aria-label="Navigation principale">
+    <span class="nav-section-label">Espace</span>
+    <a class="nav-link" *ngFor="let item of menuItems" [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i [class]="item.icon" aria-hidden="true"></i><span>{{ item.label }}</span></a>
+    <ng-container *ngIf="authService.currentUserSubjectValue?.role === 'ADMIN'">
+      <span class="nav-section-label admin-label">Administration</span>
+      <a class="nav-link" *ngFor="let item of adminItems" [routerLink]="item.path" routerLinkActive="active"><i [class]="item.icon" aria-hidden="true"></i><span>{{ item.label }}</span></a>
+    </ng-container>
+  </nav>
+</aside>

@@ -6,7 +6,6 @@ import { CustomerService } from '../../../services/customer.service';
 import { PackService } from '../../../services/pack.service';
 import { Customer } from '../../../models/customer';
 import { Pack } from '../../../models/pack';
-import { flush } from '@angular/core/testing';
 
 @Component({
   selector: 'app-subscription-form',
@@ -51,15 +50,15 @@ export class SubscriptionFormComponent implements OnInit {
   }
 
   loadCustomers(): void {
-    this.customerService.getAll().subscribe({
-      next: (data) => this.customers = data,
+    this.customerService.getAll({ page: 0, size: 100, sort: 'lastName,asc' }).subscribe({
+      next: (data) => this.customers = data.content,
       error: (error) => this.error = 'Erreur lors du chargement des clients'
     });
   }
 
   loadPacks(): void {
-    this.packService.getAll().subscribe({
-      next: (data) => this.packs = data,
+    this.packService.getAll({ page: 0, size: 100, sort: 'offerName,asc' }).subscribe({
+      next: (data) => this.packs = data.content.filter(pack => pack.active !== false),
       error: (error) => this.error = 'Erreur lors du chargement des offres'
     });
   }
@@ -68,9 +67,9 @@ export class SubscriptionFormComponent implements OnInit {
     this.subscriptionService.getById(id).subscribe({
       next: (subscription) => {
         this.subscriptionForm.patchValue({
-          customerId: subscription.customer?.id,  // 🔹 Récupérer l'ID du client
-          packId: subscription.pack?.id,          // 🔹 Récupérer l'ID du pack
-          startDate: subscription.startDate ? subscription.startDate.toString().split('T')[0] : '' // 🔹 Formater la date
+          customerId: subscription.customerId ?? subscription.customer?.id,
+          packId: subscription.packId ?? subscription.pack?.id,
+          startDate: subscription.startDate ? subscription.startDate.toString().split('T')[0] : ''
         });
       },
       error: () => {
@@ -88,7 +87,7 @@ export class SubscriptionFormComponent implements OnInit {
       const subscription = {
         customerId: +this.subscriptionForm.value.customerId,  // Conversion explicite en number
         packId: +this.subscriptionForm.value.packId,
-        startDate: new Date(this.subscriptionForm.value.startDate)
+        startDate: this.subscriptionForm.value.startDate
       };
 
       const request = this.isEditMode

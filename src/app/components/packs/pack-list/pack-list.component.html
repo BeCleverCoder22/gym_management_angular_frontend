@@ -1,9 +1,12 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2>Liste des Offres</h2>
-      <a routerLink="/packs/new" class="btn btn-primary">
+      <a *ngIf="isAdmin" routerLink="/packs/new" class="btn btn-primary">
         <i class="bi bi-plus"></i> Nouvelle Offre
       </a>
+    </div>
+    <div class="alert alert-danger" *ngIf="error" role="alert">
+      {{ error }} <button class="btn btn-sm btn-outline-danger ms-2" type="button" (click)="loadPacks()">Réessayer</button>
     </div>
   
     <div class="card">
@@ -14,33 +17,42 @@
               <th>Nom de l'offre</th>
               <th>Durée (mois)</th>
               <th>Prix mensuel</th>
+              <th>Statut</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="loading">
-              <td colspan="4" class="text-center py-4">Chargement...</td>
+              <td colspan="5" class="text-center py-4">Chargement...</td>
             </tr>
             <tr *ngIf="!loading && packs.length === 0">
-              <td colspan="4" class="text-center py-4">Aucune offre trouvée</td>
+              <td colspan="5" class="text-center py-4">Aucune offre trouvée</td>
             </tr>
             <tr *ngFor="let pack of packs">
               <td>{{ pack.offerName }}</td>
               <td>{{ pack.durationMonths }}</td>
               <td>{{ pack.monthlyPrice | currency:'XOF' }}</td>
+              <td><span class="badge" [class.bg-success]="pack.active !== false" [class.bg-secondary]="pack.active === false">{{ pack.active === false ? 'Inactive' : 'Active' }}</span></td>
               <td>
                 <div class="btn-group">
-                  <a [routerLink]="['/packs/edit', pack.id]" class="btn btn-sm btn-outline-primary">
+                  <a *ngIf="isAdmin" [routerLink]="['/packs/edit', pack.id]" class="btn btn-sm btn-outline-primary" aria-label="Modifier l'offre">
                     <i class="bi bi-pencil"></i>
                   </a>
-                  <button (click)="deletePack(pack.id!)" class="btn btn-sm btn-outline-danger">
-                    <i class="bi bi-trash"></i>
+                  <button *ngIf="isAdmin" (click)="toggleActive(pack)" class="btn btn-sm btn-outline-secondary" [attr.aria-label]="pack.active === false ? 'Activer l’offre' : 'Désactiver l’offre'">
+                    <i [class]="pack.active === false ? 'bi bi-toggle-off' : 'bi bi-toggle-on'"></i>
                   </button>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="d-flex justify-content-between align-items-center p-3 border-top" *ngIf="!loading && totalPages > 0">
+        <span>Page {{ page + 1 }} sur {{ totalPages }}</span>
+        <div class="btn-group" aria-label="Pagination offres">
+          <button class="btn btn-outline-secondary" (click)="changePage(page - 1)" [disabled]="page === 0">Précédente</button>
+          <button class="btn btn-outline-secondary" (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages">Suivante</button>
+        </div>
       </div>
     </div>
   </div>

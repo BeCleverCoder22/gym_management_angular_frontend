@@ -22,8 +22,9 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
+      organizationSlug: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
+      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      password: ['', [Validators.required, Validators.minLength(12), Validators.maxLength(72)]]
     });
   }
 

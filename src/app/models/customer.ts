@@ -5,4 +5,5 @@ export interface Customer {
     registrationDate: Date;
     phoneNumber: string;
     activeSubscription: boolean;
+    enabled?: boolean;
   }

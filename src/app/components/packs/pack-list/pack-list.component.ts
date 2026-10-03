@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
 import { PackService } from '../../../services/pack.service';
 import { Pack } from '../../../models/pack';
+import { AuthService } from '../../../services/auth.service';
+import { finalize } from 'rxjs';
+import { normalizePageResponse } from '../../../models/api';
 
 
 @Component({
@@ -12,8 +15,20 @@ import { Pack } from '../../../models/pack';
 export class PackListComponent implements OnInit {
   packs: Pack[] = [];
   loading = false;
+  error = '';
+  page = 0;
+  totalPages = 0;
+  readonly size = 20;
+  constructor(
+    private packService: PackService,
+    private authService: AuthService,
+    private changeDetector: ChangeDetectorRef,
+    private destroyRef: DestroyRef
+  ) {}
 
-  constructor(private packService: PackService) {}
+  get isAdmin(): boolean {
+    return this.authService.currentUserSubjectValue?.role === 'ADMIN';
+  }
 
   ngOnInit(): void {
     this.loadPacks();
@@ -21,28 +36,36 @@ export class PackListComponent implements OnInit {
 
   loadPacks(): void {
     this.loading = true;
-    this.packService.getAll().subscribe({
+    this.error = '';
+    this.packService.getAll({ page: this.page, size: this.size, sort: 'createdAt,desc' }).pipe(
+      finalize(() => {
+        this.loading = false;
+        if (!this.destroyRef.destroyed) this.changeDetector.detectChanges();
+      })
+    ).subscribe({
       next: (data) => {
-        this.packs = data;
-        this.loading = false;
+        const page = normalizePageResponse<Pack>(data);
+        this.packs = page.content;
+        this.totalPages = page.totalPages;
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des offres:', error);
-        this.loading = false;
+      error: () => {
+        this.error = 'Impossible de charger les offres. Vérifiez le backend et réessayez.';
       }
     });
   }
 
-  deletePack(id: number): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) {
-      this.packService.delete(id).subscribe({
-        next: () => {
-          this.packs = this.packs.filter(pack => pack.id !== id);
-        },
-        error: (error) => {
-          console.error('Erreur lors de la suppression:', error);
-        }
-      });
+  changePage(page: number): void {
+    if (page >= 0 && page < this.totalPages) {
+      this.page = page;
+      this.loadPacks();
     }
+  }
+
+  toggleActive(pack: Pack): void {
+    if (!this.isAdmin || pack.id === undefined) return;
+    this.packService.setActive(pack.id, !pack.active).subscribe({
+      next: updated => pack.active = updated.active,
+      error: () => this.error = 'Impossible de modifier le statut de cette offre.'
+    });
   }
 }

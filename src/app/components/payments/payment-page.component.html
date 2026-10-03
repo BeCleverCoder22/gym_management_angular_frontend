@@ -1,0 +1,31 @@
+<div class="page-shell">
+  <header class="page-heading">
+    <div><p class="eyebrow">Trésorerie</p><h1>Paiements</h1></div>
+    <span class="heading-count">{{ payments.length }} sur cette page</span>
+  </header>
+
+  <div class="alert alert-danger" *ngIf="error" role="alert">{{ error }} <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadPayments()">Réessayer</button></div>
+  <div class="alert alert-success" *ngIf="success" role="status">{{ success }}</div>
+
+  <section class="panel payment-form-panel">
+    <div class="section-heading"><div><p class="eyebrow">Nouvelle opération</p><h2>Enregistrer un paiement</h2></div><i class="bi bi-receipt-cutoff" aria-hidden="true"></i></div>
+    <form [formGroup]="paymentForm" (ngSubmit)="submitPayment()" class="payment-form-grid">
+      <div><label for="paymentSubscription">Abonnement</label><select id="paymentSubscription" class="form-select" formControlName="subscriptionId"><option value="">Sélectionner</option><option *ngFor="let item of subscriptions" [value]="item.id">#{{ item.id }} · {{ item.packName || item.pack?.offerName }} · {{ item.customer?.lastName }} {{ item.customer?.firstName }}</option></select></div>
+      <div><label for="paymentAmount">Montant</label><input id="paymentAmount" class="form-control" inputmode="decimal" formControlName="amount" placeholder="0.00"></div>
+      <div><label for="paymentCurrency">Devise</label><input id="paymentCurrency" class="form-control" maxlength="3" formControlName="currency"></div>
+      <div><label for="paymentMethod">Méthode</label><select id="paymentMethod" class="form-select" formControlName="method"><option *ngFor="let method of methods" [value]="method.value">{{ method.label }}</option></select></div>
+      <button class="btn btn-primary payment-submit" type="submit" [disabled]="submitting || (!retryRequest && paymentForm.invalid)"><i class="bi" [class.bi-arrow-repeat]="retryRequest" [class.bi-plus-lg]="!retryRequest" aria-hidden="true"></i> {{ submitting ? 'Envoi...' : retryRequest ? 'Réessayer avec les mêmes données' : 'Créer le paiement' }}</button>
+    </form>
+    <p class="form-note">Les méthodes électroniques restent en attente. Aucun numéro de carte n’est demandé.</p>
+  </section>
+
+  <section class="panel table-panel">
+    <div class="section-heading"><div><p class="eyebrow">Historique</p><h2>Transactions récentes</h2></div></div>
+    <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Référence</th><th>Abonnement</th><th>Montant</th><th>Méthode</th><th>État</th><th>Date</th><th>Actions</th></tr></thead><tbody>
+      <tr *ngIf="loading"><td colspan="7" class="table-state">Chargement des paiements...</td></tr>
+      <tr *ngIf="!loading && payments.length === 0"><td colspan="7" class="table-state">Aucun paiement enregistré.</td></tr>
+      <tr *ngFor="let payment of payments"><td>#{{ payment.id }}</td><td>#{{ payment.subscriptionId }}</td><td>{{ payment.amount | currency:payment.currency:'symbol':'1.2-2' }}<small class="d-block text-muted">Remboursé : {{ payment.refundedAmount | number:'1.2-2' }}</small></td><td>{{ payment.method }}</td><td><span class="status-tag" [attr.data-status]="payment.status">{{ payment.status }}</span></td><td>{{ payment.createdAt | date:'mediumDate' }}</td><td class="actions-cell"><button *ngIf="isAdmin && payment.method === 'CASH' && payment.status === 'PENDING'" class="btn btn-sm btn-outline-success" (click)="confirmCash(payment)">Confirmer espèces</button><button *ngIf="isAdmin && payment.status !== 'PENDING' && payment.status !== 'REFUNDED'" class="btn btn-sm btn-outline-secondary" (click)="requestRefund(payment)">Demander remboursement</button></td></tr>
+    </tbody></table></div>
+    <div class="pagination-bar" *ngIf="totalPages"><span>Page {{ page + 1 }} sur {{ totalPages }}</span><div class="btn-group"><button class="btn btn-outline-secondary" (click)="changePage(page - 1)" [disabled]="page === 0">Précédente</button><button class="btn btn-outline-secondary" (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages">Suivante</button></div></div>
+  </section>
+</div>

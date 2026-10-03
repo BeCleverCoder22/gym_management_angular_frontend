@@ -14,6 +14,7 @@ export class CustomerFormComponent implements OnInit {
   isEdit = false;
   customerId?: number;
   loading = false;
+  activeSubscription: boolean | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -22,10 +23,9 @@ export class CustomerFormComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.customerForm = this.fb.group({
-      lastName: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{8}$')]],
-      activeSubscription: [false]
+      lastName: ['', [Validators.required, Validators.maxLength(100)]],
+      firstName: ['', [Validators.required, Validators.maxLength(100)]],
+      phoneNumber: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(25), Validators.pattern(/^[0-9+() .-]+$/)]]
     });
   }
 
@@ -42,6 +42,7 @@ export class CustomerFormComponent implements OnInit {
     this.customerService.getById(this.customerId!).subscribe({
       next: (customer) => {
         this.customerForm.patchValue(customer);
+        this.activeSubscription = customer.activeSubscription;
         this.loading = false;
       },
       error: (error) => {

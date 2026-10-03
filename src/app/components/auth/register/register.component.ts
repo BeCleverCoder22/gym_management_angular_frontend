@@ -20,11 +20,12 @@ export class RegisterComponent {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(4)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      organizationName: ['', [Validators.required, Validators.maxLength(100)]],
+      organizationSlug: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80), Validators.pattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)]],
+      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
+      password: ['', [Validators.required, Validators.minLength(12), Validators.maxLength(72)]],
       confirmPassword: ['', Validators.required],
-      role: 'USER'
     }, {
       validator: this.passwordMatchValidator
     });
@@ -40,9 +41,9 @@ export class RegisterComponent {
       this.loading = true;
       this.error = '';
 
-      const { confirmPassword, ...userData } = this.registerForm.value;
+      const { confirmPassword, ...registration } = this.registerForm.getRawValue();
       
-      this.authService.register(userData).subscribe({
+      this.authService.register(registration).subscribe({
         next: () => {
           this.router.navigate(['/login']);
         },

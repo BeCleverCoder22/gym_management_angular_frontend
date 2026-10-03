@@ -1,40 +1,8 @@
-.login-container {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f5f5f5;
-  }
-  
-  .login-card {
-    width: 100%;
-    max-width: 400px;
-    padding: 2rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-  
-  .form-control {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .form-control.is-invalid {
-    border-color: #dc3545;
-  }
-  
-  .btn-block {
-    width: 100%;
-  }
+.login-container { min-height: calc(100vh - 70px); display: grid; place-items: center; padding: 2rem 1rem; }
+.login-card { width: min(100%, 440px); padding: 2.2rem; border: 1px solid var(--line); border-top: 4px solid var(--brand); border-radius: 8px; background: white; box-shadow: 0 18px 50px rgba(25, 48, 36, .1); }
+.login-card h2 { margin-bottom: 1.5rem; font-size: 1.55rem; }
+.login-card .form-group { margin-bottom: 1.1rem; }
+.login-card .form-group label { display: block; margin-bottom: .45rem; }
+.login-card .form-control { width: 100%; }
+.login-card .btn-block { width: 100%; min-height: 44px; margin-top: .4rem; }
+@media (max-width: 480px) { .login-card { padding: 1.5rem; } }

@@ -1,8 +1,11 @@
+export type UserRole = 'USER' | 'ADMIN';
+
 export interface User {
     id?: number;
     username: string;
     email: string;
-    role: string;
+    role: UserRole;
+    enabled?: boolean;
     password?: string;
     createdAt?: Date;
     lastLogin?: Date;

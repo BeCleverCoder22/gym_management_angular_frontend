@@ -24,8 +24,9 @@ export class PackFormComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.packForm = this.fb.group({
-      offerName: ['', [Validators.required, Validators.minLength(3)]],
-      durationMonths: ['', [Validators.required, Validators.min(1)]],
+      offerName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+      description: ['', Validators.maxLength(1000)],
+      durationMonths: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
       monthlyPrice: ['', [Validators.required, Validators.min(0)]]
     });
   }

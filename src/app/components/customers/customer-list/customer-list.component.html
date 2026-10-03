@@ -8,19 +8,24 @@
   
     <div class="card mb-4">
       <div class="card-body">
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Rechercher un client..."
-            [(ngModel)]="searchTerm"
-            (keyup.enter)="searchCustomers()"
-          >
-          <button class="btn btn-outline-secondary" type="button" (click)="searchCustomers()">
-            <i class="bi bi-search"></i>
-          </button>
+        <div class="row g-2">
+          <div class="col-lg-5"><label class="visually-hidden" for="customerQuery">Recherche</label><input id="customerQuery" type="search" class="form-control" placeholder="Nom, prénom ou terme..." [(ngModel)]="searchTerm" (keyup.enter)="searchCustomers()"></div>
+          <div class="col-lg-3"><label class="visually-hidden" for="customerLastName">Nom</label><input id="customerLastName" type="search" class="form-control" placeholder="Nom" [(ngModel)]="lastNameFilter" (keyup.enter)="searchCustomers()"></div>
+          <div class="col-lg-3"><label class="visually-hidden" for="customerPhone">Téléphone</label><input id="customerPhone" type="search" class="form-control" placeholder="Téléphone" [(ngModel)]="phoneFilter" (keyup.enter)="searchCustomers()"></div>
+          <div class="col-lg-1 d-grid"><button class="btn btn-outline-secondary" type="button" (click)="searchCustomers()" aria-label="Rechercher"><i class="bi bi-search"></i></button></div>
         </div>
+        <label class="visually-hidden" for="customerSort">Trier les clients</label>
+        <select id="customerSort" class="form-select mt-3" [value]="sort" (change)="changeSort($any($event.target).value)">
+          <option value="registrationDate,desc">Inscription, récent</option>
+          <option value="lastName,asc">Nom, A à Z</option>
+          <option value="firstName,asc">Prénom, A à Z</option>
+          <option value="id,desc">Identifiant, récent</option>
+        </select>
       </div>
+    </div>
+
+    <div class="alert alert-danger" *ngIf="error" role="alert">
+      {{ error }} <button class="btn btn-sm btn-outline-danger ms-2" type="button" (click)="loadCustomers()">Réessayer</button>
     </div>
   
     <div class="card">
@@ -32,16 +37,17 @@
               <th>Prénom</th>
               <th>Date d'inscription</th>
               <th>Téléphone</th>
-              <th>Statut</th>
+              <th>Compte</th>
+              <th>Abonnement</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="loading">
-              <td colspan="6" class="text-center py-4">Chargement...</td>
+              <td colspan="7" class="text-center py-4">Chargement...</td>
             </tr>
             <tr *ngIf="!loading && customers.length === 0">
-              <td colspan="6" class="text-center py-4">Aucun client trouvé</td>
+              <td colspan="7" class="text-center py-4">Aucun client trouvé</td>
             </tr>
             <tr *ngFor="let customer of customers">
               <td>{{ customer.lastName }}</td>
@@ -49,10 +55,11 @@
               <td>{{ customer.registrationDate | date:'dd/MM/yyyy' }}</td>
               <td>{{ customer.phoneNumber }}</td>
               <td>
-                <span [class]="customer.activeSubscription ? 'badge bg-success' : 'badge bg-danger'">
-                  {{ customer.activeSubscription ? 'Actif' : 'Inactif' }}
+                <span class="badge" [class.bg-success]="customer.enabled !== false" [class.bg-secondary]="customer.enabled === false">
+                  {{ customer.enabled === false ? 'Désactivé' : 'Actif' }}
                 </span>
               </td>
+              <td>{{ customer.activeSubscription ? 'Actif' : 'Aucun' }}</td>
               <td>
                 <div class="btn-group">
                   <a [routerLink]="['/customers/edit', customer.id]" class="btn btn-sm btn-outline-primary">
@@ -66,6 +73,13 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="d-flex justify-content-between align-items-center p-3 border-top" *ngIf="!loading && totalPages > 0">
+        <span>Page {{ page + 1 }} sur {{ totalPages }}</span>
+        <div class="btn-group" aria-label="Pagination clients">
+          <button class="btn btn-outline-secondary" type="button" (click)="changePage(page - 1)" [disabled]="page === 0">Précédente</button>
+          <button class="btn btn-outline-secondary" type="button" (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages">Suivante</button>
+        </div>
       </div>
     </div>
   </div>

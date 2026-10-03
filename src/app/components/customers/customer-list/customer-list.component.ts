@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
 import { CustomerService } from '../../../services/customer.service';
 import { Customer } from '../../../models/customer';
+import { finalize } from 'rxjs';
+import { normalizePageResponse } from '../../../models/api';
 
 
 @Component({
@@ -13,8 +15,19 @@ export class CustomerListComponent implements OnInit {
   customers: Customer[] = [];
   loading = false;
   searchTerm = '';
+  lastNameFilter = '';
+  phoneFilter = '';
+  error = '';
+  page = 0;
+  readonly size = 20;
+  totalPages = 0;
+  sort = 'registrationDate,desc';
 
-  constructor(private customerService: CustomerService) {}
+  constructor(
+    private customerService: CustomerService,
+    private changeDetector: ChangeDetectorRef,
+    private destroyRef: DestroyRef
+  ) {}
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -22,38 +35,51 @@ export class CustomerListComponent implements OnInit {
 
   loadCustomers(): void {
     this.loading = true;
-    this.customerService.getAll().subscribe({
+    this.error = '';
+    this.customerService.getAll({
+      page: this.page,
+      size: this.size,
+      sort: this.sort,
+      q: this.searchTerm.trim() || undefined,
+      lastName: this.lastNameFilter.trim() || undefined,
+      phone: this.phoneFilter.trim() || undefined
+    }).pipe(
+      finalize(() => {
+        this.loading = false;
+        if (!this.destroyRef.destroyed) this.changeDetector.detectChanges();
+      })
+    ).subscribe({
       next: (data) => {
-        this.customers = data;
-        this.loading = false;
+        const page = normalizePageResponse<Customer>(data);
+        this.customers = page.content;
+        this.totalPages = page.totalPages;
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des clients:', error);
-        this.loading = false;
+      error: () => {
+        this.error = 'Impossible de charger les clients. Vérifiez le backend et réessayez.';
       }
     });
   }
 
   searchCustomers(): void {
-    if (this.searchTerm.trim()) {
-      this.loading = true;
-      this.customerService.searchByName(this.searchTerm).subscribe({
-        next: (data) => {
-          this.customers = data;
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Erreur lors de la recherche:', error);
-          this.loading = false;
-        }
-      });
-    } else {
+    this.page = 0;
+    this.loadCustomers();
+  }
+
+  changeSort(sort: string): void {
+    this.sort = sort;
+    this.page = 0;
+    this.loadCustomers();
+  }
+
+  changePage(page: number): void {
+    if (page >= 0 && page < this.totalPages) {
+      this.page = page;
       this.loadCustomers();
     }
   }
 
   deleteCustomer(id: number): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
+    if (confirm('Désactiver ce client ? Cette action conserve son historique.')) {
       this.customerService.delete(id).subscribe({
         next: () => {
           this.customers = this.customers.filter(customer => customer.id !== id);

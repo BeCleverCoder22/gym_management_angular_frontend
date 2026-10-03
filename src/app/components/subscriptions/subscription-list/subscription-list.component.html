@@ -17,37 +17,51 @@
                 <th>Client</th>
                 <th>Offre</th>
                 <th>Date de début</th>
+                <th>Date de fin</th>
                 <th>Prix mensuel</th>
+                <th>Statut</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="loading">
-                <td colspan="5" class="text-center">Chargement...</td>
+                <td colspan="7" class="text-center">Chargement...</td>
               </tr>
               <tr *ngIf="!loading && subscriptions.length === 0">
-                <td colspan="5" class="text-center">Aucun abonnement trouvé</td>
+                <td colspan="7" class="text-center">Aucun abonnement trouvé</td>
               </tr>
               <tr *ngFor="let subscription of subscriptions">
                 <td>{{ subscription.customer?.lastName }} {{ subscription.customer?.firstName }}</td>
                 <td>{{ subscription.pack?.offerName }}</td>
                 <td>{{ subscription.startDate | date:'dd/MM/yyyy' }}</td>
-                <td>{{ subscription.pack?.monthlyPrice | currency:'XOF' }}</td>
+                <td>{{ subscription.endDate | date:'dd/MM/yyyy' }}</td>
+                <td>{{ (subscription.monthlyPrice ?? subscription.pack?.monthlyPrice) | currency:'XOF':'symbol':'1.0-0' }}</td>
+                <td><span class="badge" [class.bg-success]="subscription.status === 'ACTIVE'" [class.bg-warning]="subscription.status === 'SCHEDULED'" [class.bg-secondary]="subscription.status === 'EXPIRED' || subscription.status === 'CANCELLED'">{{ statusLabel(subscription.status) }}</span></td>
                 <td>
                   <div class="btn-group">
                     <button class="btn btn-sm btn-outline-primary" 
-                            [routerLink]="['/subscriptions/edit', subscription.id]">
+                            [routerLink]="['/subscriptions/edit', subscription.id]" aria-label="Modifier l'abonnement">
                       <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" 
+                    <button *ngIf="subscription.status !== 'CANCELLED'" class="btn btn-sm btn-outline-danger" 
                             (click)="cancelSubscription(subscription.id!)">
                       <i class="bi bi-x-circle"></i>
+                    </button>
+                    <button *ngIf="subscription.status === 'ACTIVE' || subscription.status === 'EXPIRED'" class="btn btn-sm btn-outline-success" (click)="renewSubscription(subscription.id!)" aria-label="Renouveler">
+                      <i class="bi bi-arrow-repeat"></i>
                     </button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center p-3 border-top" *ngIf="!loading && totalPages > 0">
+        <span>Page {{ page + 1 }} sur {{ totalPages }}</span>
+        <div class="btn-group" aria-label="Pagination abonnements">
+          <button class="btn btn-outline-secondary" (click)="changePage(page - 1)" [disabled]="page === 0">Précédente</button>
+          <button class="btn btn-outline-secondary" (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages">Suivante</button>
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@
       </a>
     </div>
   
-    <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+    <div class="alert alert-danger" *ngIf="error" role="alert">{{ error }} <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadUsers()">Réessayer</button></div>
   
     <div class="table-responsive">
       <table class="table table-striped">
@@ -16,7 +16,7 @@
             <th>Email</th>
             <th>Rôle</th>
             <th>Date de création</th>
-            <!-- <th>Dernière connexion</th> -->
+            <th>Statut</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -26,13 +26,13 @@
             <td>{{ user.email }}</td>
             <td>{{ user.role }}</td>
             <td>{{ user.createdAt | date:'short' }}</td>
-            <!-- <td>{{ user.lastLogin | date:'short' }}</td> -->
+            <td><span class="badge" [class.bg-success]="user.enabled !== false" [class.bg-secondary]="user.enabled === false">{{ user.enabled === false ? 'Désactivé' : 'Actif' }}</span></td>
             <td>
               <div class="btn-group">
                 <a [routerLink]="['/users/edit', user.id]" class="btn btn-sm btn-outline-primary">
                   <i class="bi bi-pencil"></i>
                 </a>
-                <button class="btn btn-sm btn-outline-danger" *ngIf="user.id !== undefined" (click)="deleteUser(user.id)">
+                <button class="btn btn-sm btn-outline-danger" *ngIf="user.id !== undefined && user.enabled !== false" (click)="deleteUser(user.id)" aria-label="Désactiver l'utilisateur">
                   <i class="bi bi-trash"></i>
                 </button>
               </div>
@@ -40,6 +40,13 @@
           </tr>
         </tbody>
       </table>
+      <div class="d-flex justify-content-between align-items-center p-3 border-top" *ngIf="!loading && totalPages > 0">
+        <span>Page {{ page + 1 }} sur {{ totalPages }}</span>
+        <div class="btn-group" aria-label="Pagination utilisateurs">
+          <button class="btn btn-outline-secondary" (click)="changePage(page - 1)" [disabled]="page === 0">Précédente</button>
+          <button class="btn btn-outline-secondary" (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages">Suivante</button>
+        </div>
+      </div>
   
       <div class="text-center my-4" *ngIf="loading">
         <div class="spinner-border text-primary" role="status">

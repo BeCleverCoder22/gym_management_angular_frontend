@@ -1,4 +1,6 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
 import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -16,14 +18,17 @@ import { PackFormComponent } from './components/packs/pack-form/pack-form.compon
 import { SubscriptionListComponent } from './components/subscriptions/subscription-list/subscription-list.component';
 import { SubscriptionFormComponent } from './components/subscriptions/subscription-form/subscription-form.component';
 import { StatisticsComponent } from './components/dashboard/statistics/statistics.component';
-import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ProfileComponent } from './components/profile/profile.component';
 import { UserListComponent } from './components/users/user-list/user-list.component';
 import { UserFormComponent } from './components/users/user-form/user-form.component';
+import { PaymentPageComponent } from './components/payments/payment-page.component';
+import { AdminOperationsComponent } from './components/admin/admin-operations.component';
 
+registerLocaleData(localeFr);
 
 @NgModule({
   declarations: [
@@ -42,7 +47,8 @@ import { UserFormComponent } from './components/users/user-form/user-form.compon
     StatisticsComponent,
     ProfileComponent,
     UserListComponent,
-    UserFormComponent
+    UserFormComponent,
+    AdminOperationsComponent
   ],
   imports: [
     BrowserModule,
@@ -50,12 +56,14 @@ import { UserFormComponent } from './components/users/user-form/user-form.compon
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    PaymentPageComponent,
     BrowserAnimationsModule,
     NgbModule
   ],
   providers: [
+    { provide: LOCALE_ID, useValue: 'fr-FR' },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    provideHttpClient(withFetch())
+    provideHttpClient(withFetch(), withInterceptorsFromDi())
   ],
   bootstrap: [AppComponent]
 })

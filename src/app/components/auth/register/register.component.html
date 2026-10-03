@@ -1,7 +1,19 @@
 <div class="register-container">
     <div class="register-card">
-      <h2>Inscription</h2>
+      <p class="eyebrow">Nouvel espace</p>
+      <h2>Créer votre organisation</h2>
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="organizationName">Nom de l'organisation</label>
+          <input type="text" id="organizationName" formControlName="organizationName" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="organizationSlug">Slug de l'organisation</label>
+          <input type="text" id="organizationSlug" formControlName="organizationSlug" class="form-control" autocomplete="off">
+          <div class="invalid-feedback" *ngIf="registerForm.get('organizationSlug')?.touched && registerForm.get('organizationSlug')?.invalid">
+            Utilisez des minuscules, chiffres et tirets (3 à 80 caractères).
+          </div>
+        </div>
         <div class="form-group">
           <label for="username">Nom d'utilisateur</label>
           <input
@@ -15,7 +27,7 @@
             Le nom d'utilisateur est requis
           </div>
           <div class="invalid-feedback" *ngIf="registerForm.get('username')?.errors?.['minlength']">
-            Le nom d'utilisateur doit contenir au moins 4 caractères
+            Le nom d'utilisateur doit contenir entre 3 et 50 caractères
           </div>
         </div>
   
@@ -49,7 +61,7 @@
             Le mot de passe est requis
           </div>
           <div class="invalid-feedback" *ngIf="registerForm.get('password')?.errors?.['minlength']">
-            Le mot de passe doit contenir au moins 6 caractères
+            Le mot de passe doit contenir entre 12 et 72 caractères
           </div>
         </div>
   

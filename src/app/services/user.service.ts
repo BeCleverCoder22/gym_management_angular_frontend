@@ -3,17 +3,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../models/user';
+import { PageQuery, PageResponse } from '../models/api';
+import { environment } from '../../environments/environment';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:8080/api/users';
+  private readonly apiUrl = `${environment.apiBaseUrl}/users`;
   constructor(private http: HttpClient) {}
 
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUrl);
+  getUsers(query: PageQuery = {}): Observable<PageResponse<User>> {
+    return this.http.get<PageResponse<User>>(this.apiUrl, {
+      params: { page: query.page ?? 0, size: query.size ?? 20, sort: query.sort ?? 'createdAt,desc' }
+    });
   }
 
   getUser(id: number): Observable<User> {
@@ -29,7 +33,7 @@ export class UserService {
   }
 
   deleteUser(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.patch<void>(`${this.apiUrl}/${id}/status`, { enabled: false });
   }
 
   getCurrentUser(): Observable<User> {

@@ -15,6 +15,9 @@ import { StatisticsComponent } from './components/dashboard/statistics/statistic
 import { ProfileComponent } from './components/profile/profile.component';
 import { UserListComponent } from './components/users/user-list/user-list.component';
 import { UserFormComponent } from './components/users/user-form/user-form.component';
+import { AdminGuard } from './guards/admin.guard';
+import { PaymentPageComponent } from './components/payments/payment-page.component';
+import { AdminOperationsComponent } from './components/admin/admin-operations.component';
 
 
 const routes: Routes = [
@@ -30,15 +33,18 @@ const routes: Routes = [
       { path: 'customers/new', component: CustomerFormComponent },
       { path: 'customers/edit/:id', component: CustomerFormComponent },
       { path: 'packs', component: PackListComponent },
-      { path: 'packs/new', component: PackFormComponent },
-      { path: 'packs/edit/:id', component: PackFormComponent },
+      { path: 'packs/new', component: PackFormComponent, canActivate: [AdminGuard] },
+      { path: 'packs/edit/:id', component: PackFormComponent, canActivate: [AdminGuard] },
       { path: 'subscriptions', component: SubscriptionListComponent },
       { path: 'subscriptions/new', component: SubscriptionFormComponent },
       { path: 'subscriptions/edit/:id', component: SubscriptionFormComponent },
+      { path: 'payments', component: PaymentPageComponent },
       { path: 'profile', component: ProfileComponent },
-      { path: 'users', component: UserListComponent },
-      { path: 'users/new', component: UserFormComponent },
-      { path: 'users/edit/:id', component: UserFormComponent }
+      { path: 'users', component: UserListComponent, canActivate: [AdminGuard] },
+      { path: 'users/new', component: UserFormComponent, canActivate: [AdminGuard] },
+      { path: 'users/edit/:id', component: UserFormComponent, canActivate: [AdminGuard] },
+      { path: 'audit', component: AdminOperationsComponent, canActivate: [AdminGuard], data: { view: 'audit' } },
+      { path: 'notifications', component: AdminOperationsComponent, canActivate: [AdminGuard], data: { view: 'notifications' } }
     ]
   }
 ];

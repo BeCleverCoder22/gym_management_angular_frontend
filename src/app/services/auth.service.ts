@@ -1,9 +1,9 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { AuthResponse, LoginRequest } from '../models/auth';
+import { BehaviorSubject, catchError, map, Observable, switchMap, tap, throwError } from 'rxjs';
+import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth';
 import { User } from '../models/user';
-import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,66 +11,52 @@ import { isPlatformBrowser } from '@angular/common';
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  private apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = environment.apiBaseUrl;
+  private token: string | null = null;
 
-  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: any) {
-    if (this.isLocalStorageAvailable()) {
-      const token = localStorage.getItem('token');
-      if (token) {
-        this.loadCurrentUser();
-      }
-    }
+  constructor(private http: HttpClient) {}
+
+  get accessToken(): string | null {
+    return this.token;
   }
 
-  private isLocalStorageAvailable(): boolean {
-    return isPlatformBrowser(this.platformId);
+  get currentUserSubjectValue(): User | null {
+    return this.currentUserSubject.value;
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
         tap(response => {
-          if (this.isLocalStorageAvailable()) {
-            localStorage.setItem('token', response.token);
-          }
-          this.currentUserSubject.next(response.user);
+          this.token = response.token;
+        }),
+        switchMap(response => this.http.get<User>(`${this.apiUrl}/users/me`).pipe(
+          tap(user => this.currentUserSubject.next(user)),
+          map(() => response)
+        )),
+        catchError(error => {
+          this.clearSession();
+          return throwError(() => error);
         })
       );
   }
 
-  register(user: User): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, user)
-      .pipe(
-        tap(response => {
-          if (this.isLocalStorageAvailable()) {
-            localStorage.setItem('token', response.token);
-          }
-          this.currentUserSubject.next(response.user);
-        })
-      );
+  register(request: RegisterRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/auth/register`, request);
   }
 
-  logout(): void {
-    if (this.isLocalStorageAvailable()) {
-      localStorage.removeItem('token');
-    }
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/auth/logout`, {}).pipe(
+      tap(() => this.clearSession())
+    );
+  }
+
+  clearSession(): void {
+    this.token = null;
     this.currentUserSubject.next(null);
   }
 
-  private loadCurrentUser(): void {
-    this.http.get<User>(`${this.apiUrl}/auth/me`)
-      .subscribe(
-        user => this.currentUserSubject.next(user),
-        error => {
-          if (this.isLocalStorageAvailable()) {
-            localStorage.removeItem('token');
-          }
-          this.currentUserSubject.next(null);
-        }
-      );
-  }
-
   isAuthenticated(): boolean {
-    return this.isLocalStorageAvailable() && !!localStorage.getItem('token');
+    return this.token !== null;
   }
 }

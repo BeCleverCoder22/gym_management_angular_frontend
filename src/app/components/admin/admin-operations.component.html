@@ -1,0 +1,20 @@
+<div class="page-shell">
+  <header class="page-heading"><div><p class="eyebrow">Administration</p><h1>{{ view === 'audit' ? 'Journal d’audit' : 'Notifications' }}</h1></div></header>
+  <div class="alert alert-danger" *ngIf="error" role="alert">{{ error }} <button class="btn btn-sm btn-outline-danger ms-2" (click)="load()">Réessayer</button></div>
+  <div class="alert alert-success" *ngIf="success" role="status">{{ success }}</div>
+  <section class="panel table-panel" *ngIf="view === 'audit'">
+    <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Acteur</th><th>Action</th><th>Ressource</th><th>Date</th></tr></thead><tbody>
+      <tr *ngIf="loading"><td colspan="4" class="table-state">Chargement du journal...</td></tr>
+      <tr *ngIf="!loading && auditRecords.length === 0"><td colspan="4" class="table-state">Aucune activité enregistrée.</td></tr>
+      <tr *ngFor="let entry of auditRecords"><td>{{ entry.actor }}</td><td>{{ entry.action }}</td><td>{{ entry.resourceType || '—' }} <span *ngIf="entry.resourceId">#{{ entry.resourceId }}</span></td><td>{{ entry.occurredAt | date:'medium' }}</td></tr>
+    </tbody></table></div>
+  </section>
+  <section class="panel table-panel" *ngIf="view === 'notifications'">
+    <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Référence</th><th>État</th><th>Tentatives</th><th>Prochaine tentative</th><th>Dernière erreur</th><th></th></tr></thead><tbody>
+      <tr *ngIf="loading"><td colspan="6" class="table-state">Chargement de l’outbox...</td></tr>
+      <tr *ngIf="!loading && notifications.length === 0"><td colspan="6" class="table-state">Aucune notification en attente.</td></tr>
+      <tr *ngFor="let item of notifications"><td>#{{ item.id }}</td><td><span class="status-tag">{{ item.status }}</span></td><td>{{ item.attempts }}</td><td>{{ item.nextAttemptAt ? (item.nextAttemptAt | date:'medium') : '—' }}</td><td class="error-cell">{{ item.lastError || '—' }}</td><td><button *ngIf="['FAILED', 'RETRYABLE'].includes(item.status.toUpperCase())" class="btn btn-sm btn-outline-primary" (click)="retry(item)"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Relancer</button></td></tr>
+    </tbody></table></div>
+  </section>
+  <div class="pagination-bar" *ngIf="totalPages"><span>Page {{ page + 1 }} sur {{ totalPages }}</span><div class="btn-group"><button class="btn btn-outline-secondary" (click)="changePage(page - 1)" [disabled]="page === 0">Précédente</button><button class="btn btn-outline-secondary" (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages">Suivante</button></div></div>
+</div>

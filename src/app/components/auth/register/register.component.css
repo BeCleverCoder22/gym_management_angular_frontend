@@ -1,35 +1,8 @@
-.register-container {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f5f5f5;
-  }
-  
-  .register-card {
-    width: 100%;
-    max-width: 400px;
-    padding: 2rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-  
-  .invalid-feedback {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-  }
-  
-  .btn-block {
-    width: 100%;
-  }
+.register-container { min-height: calc(100vh - 70px); display: grid; place-items: center; padding: 2rem 1rem; }
+.register-card { width: min(100%, 520px); padding: 2.2rem; border: 1px solid var(--line); border-top: 4px solid var(--signal); border-radius: 8px; background: white; box-shadow: 0 18px 50px rgba(25, 48, 36, .1); }
+.register-card h2 { margin-bottom: 1.4rem; font-size: 1.55rem; }
+.register-card .form-group { margin-bottom: .95rem; }
+.register-card .form-group label { display: block; margin-bottom: .4rem; }
+.register-card .btn-block { width: 100%; min-height: 44px; margin-top: .4rem; }
+.register-card .invalid-feedback { margin-top: .25rem; font-size: .82rem; }
+@media (max-width: 480px) { .register-card { padding: 1.5rem; } }

@@ -37,6 +37,11 @@
                   </div>
                 </div>
               </div>
+
+              <div class="mb-4" *ngIf="isEdit && activeSubscription !== null">
+                <span class="text-muted me-2">Abonnement actuel</span>
+                <span class="badge" [class.bg-success]="activeSubscription" [class.bg-secondary]="!activeSubscription">{{ activeSubscription ? 'Actif' : 'Aucun abonnement actif' }}</span>
+              </div>
   
               <div class="mb-3">
                 <label for="phoneNumber" class="form-label">Téléphone</label>
@@ -48,21 +53,7 @@
                   [class.is-invalid]="customerForm.get('phoneNumber')?.invalid && customerForm.get('phoneNumber')?.touched"
                 >
                 <div class="invalid-feedback">
-                  Numéro de téléphone invalide (10 chiffres requis)
-                </div>
-              </div>
-  
-              <div class="mb-3">
-                <div class="form-check">
-                  <input
-                    type="checkbox"
-                    id="activeSubscription"
-                    formControlName="activeSubscription"
-                    class="form-check-input"
-                  >
-                  <label class="form-check-label" for="activeSubscription">
-                    Abonnement actif
-                  </label>
+                    Entrez 7 à 25 caractères : chiffres, espaces ou + ( ) . -
                 </div>
               </div>
   

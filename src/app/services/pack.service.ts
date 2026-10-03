@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Pack } from '../models/pack';
+import { PageQuery, PageResponse } from '../models/api';
+import { environment } from '../../environments/environment';
 
 
 @Injectable({
@@ -9,11 +11,13 @@ import { Pack } from '../models/pack';
 })
 export class PackService {
 
-  private apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = environment.apiBaseUrl;
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Pack[]> {
-    return this.http.get<Pack[]>(`${this.apiUrl}/packs`);
+  getAll(query: PageQuery = {}): Observable<PageResponse<Pack>> {
+    return this.http.get<PageResponse<Pack>>(`${this.apiUrl}/packs`, {
+      params: { page: query.page ?? 0, size: query.size ?? 20, sort: query.sort ?? 'createdAt,desc' }
+    });
   }
 
   getById(id: number): Observable<Pack> {
@@ -30,5 +34,9 @@ export class PackService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/packs/${id}`);
+  }
+
+  setActive(id: number, active: boolean): Observable<Pack> {
+    return this.http.patch<Pack>(`${this.apiUrl}/packs/${id}/status`, { active });
   }
 }
